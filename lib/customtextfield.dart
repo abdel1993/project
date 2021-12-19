@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'listbuilder.dart';
 
 class CustomTextFfield extends StatefulWidget {
   const CustomTextFfield({Key? key}) : super(key: key);
@@ -8,14 +9,30 @@ class CustomTextFfield extends StatefulWidget {
 }
 
 class _CustomTextFfieldState extends State<CustomTextFfield> {
-  bool isSave = false;
-  int current = 0;
-
+  //variable used
   List<Map> dataCollect = [];
-
   TextEditingController myControllerFirstName = TextEditingController();
-
   TextEditingController myControllerLastName = TextEditingController();
+  int current = 0;
+  bool isSave = false;
+
+//CallBack Function for Edit Icon
+  callBackEdit(index) {
+    setState(() {
+      myControllerFirstName.text = dataCollect[index]['name'];
+      myControllerLastName.text = dataCollect[index]['lastName'];
+      current = index;
+      isSave = true;
+    });
+  }
+
+//CallBack Function for Remove Alert Dailogue
+  callBackRemov(index) {
+    setState(() {
+      dataCollect.removeAt(index);
+      Navigator.of(context).pop();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +80,8 @@ class _CustomTextFfieldState extends State<CustomTextFfield> {
               width: 100,
               height: 40,
               child: Center(
-                  child: isSave == false ? Text("SAVE") : Text("UPDATE")),
+                child: isSave == false ? Text('SAVE') : Text('UPDATE'),
+              ),
             ),
 
             // On Pressed
@@ -91,118 +109,21 @@ class _CustomTextFfieldState extends State<CustomTextFfield> {
                 myControllerFirstName.clear();
                 myControllerLastName.clear();
 
-                setState(() {
-                  isSave = false;
-                });
+                setState(
+                  () {
+                    isSave = false;
+                  },
+                );
               }
             },
           ),
 
-          Container(
-            margin: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.pink[100],
-            ),
-
-            //List View Builder
-
-            child: ListViewBuilder(),
-          ),
+          ListBuilderC(
+              dataCollect: dataCollect,
+              callBackEditFun: callBackEdit,
+              callBackRemove: callBackRemov),
         ],
       ),
-    );
-  }
-
-  // Methode List View Builder
-
-  ListView ListViewBuilder() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: dataCollect.length,
-      itemBuilder: (context, index) {
-        //List Tile
-
-        return ListTile(
-          leading: CircleAvatar(
-            radius: 18,
-            child: Text(index.toString()),
-          ),
-          title: Text(dataCollect[index]['name'] +
-              " " +
-              dataCollect[index]['lastName']),
-          subtitle: Text("ID : ${index.toString()}"),
-          trailing: Container(
-            width: 100,
-            height: double.infinity,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              // ignore: prefer_const_literals_to_create_immutables
-              children: [
-                // Icon Of Delete
-
-                IconButton(
-                  tooltip: "Delete",
-                  icon: Icon(
-                    Icons.delete,
-                    color: Colors.red[800],
-                  ),
-                  onPressed: () {
-                    //Alert Dailogue
-
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: const Text("Delete!!"),
-                            content: const Text(
-                                "Are you sure you want to delete ??"),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text("No"),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    dataCollect.removeAt(index);
-                                    Navigator.of(context).pop();
-                                  });
-                                },
-                                child: const Text("Yes"),
-                              ),
-                            ],
-                          );
-                        });
-                  },
-                ),
-
-                //Icon Of Edit
-
-                IconButton(
-                  tooltip: "Edit",
-                  icon: Icon(
-                    Icons.edit,
-                    color: Colors.green[800],
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      myControllerFirstName.text = dataCollect[index]['name'];
-                      myControllerLastName.text =
-                          dataCollect[index]['lastName'];
-                      current = index;
-                      isSave = true;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }
