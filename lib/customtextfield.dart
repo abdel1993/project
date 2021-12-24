@@ -1,26 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:textfieldtest/Model/user.dart';
+import 'package:textfieldtest/cont.dart';
 import 'listbuilder.dart';
 
 class CustomTextFfield extends StatefulWidget {
-  const CustomTextFfield({Key? key}) : super(key: key);
+  CustomTextFfield({Key? key}) : super(key: key);
 
   @override
   _CustomTextFfieldState createState() => _CustomTextFfieldState();
 }
 
 class _CustomTextFfieldState extends State<CustomTextFfield> {
+  //instanc USERS
+  List<Users> user = [];
+  addUser(String name, String lname) {
+    user.add(
+      Users.fromJson(
+        {'fname': name, 'lname': lname},
+      ),
+    );
+  }
+
   //variable used
   List<Map> dataCollect = [];
-  TextEditingController myControllerFirstName = TextEditingController();
-  TextEditingController myControllerLastName = TextEditingController();
+  TextEditingController _myControllerFirstName = TextEditingController();
+  TextEditingController _myControllerLastName = TextEditingController();
   int current = 0;
   bool isSave = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _myControllerFirstName.dispose();
+
+    _myControllerLastName.dispose();
+    super.dispose();
+  }
 
 //CallBack Function for Edit Icon
   callBackEdit(index) {
     setState(() {
-      myControllerFirstName.text = dataCollect[index]['name'];
-      myControllerLastName.text = dataCollect[index]['lastName'];
+      _myControllerFirstName.text = dataCollect[index]['name'];
+      _myControllerLastName.text = dataCollect[index]['lastName'];
       current = index;
       isSave = true;
     });
@@ -48,7 +73,7 @@ class _CustomTextFfieldState extends State<CustomTextFfield> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
             child: TextFormField(
-              controller: myControllerFirstName,
+              controller: _myControllerFirstName,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Enter Your First Name',
@@ -61,7 +86,7 @@ class _CustomTextFfieldState extends State<CustomTextFfield> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
             child: TextFormField(
-              controller: myControllerLastName,
+              controller: _myControllerLastName,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Enter Your Last Name',
@@ -90,24 +115,27 @@ class _CustomTextFfieldState extends State<CustomTextFfield> {
               // part SAVE
 
               if (isSave == false) {
+                addUser(
+                    _myControllerFirstName.text, _myControllerLastName.text);
+
                 Map add = {
-                  'name': myControllerFirstName.text,
-                  'lastName': myControllerLastName.text
+                  'name': _myControllerFirstName.text,
+                  'lastName': _myControllerLastName.text
                 };
 
                 setState(() {
                   dataCollect.add(add);
-                  myControllerFirstName.clear();
-                  myControllerLastName.clear();
+                  _myControllerFirstName.clear();
+                  _myControllerLastName.clear();
                 });
 
                 // PART UPDATE
 
               } else if (isSave == true) {
-                dataCollect[current]['name'] = myControllerFirstName.text;
-                dataCollect[current]['lastName'] = myControllerLastName.text;
-                myControllerFirstName.clear();
-                myControllerLastName.clear();
+                dataCollect[current]['name'] = _myControllerFirstName.text;
+                dataCollect[current]['lastName'] = _myControllerLastName.text;
+                _myControllerFirstName.clear();
+                _myControllerLastName.clear();
 
                 setState(
                   () {
